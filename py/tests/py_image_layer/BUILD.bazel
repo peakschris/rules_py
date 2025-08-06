@@ -40,6 +40,9 @@ platform_transition_filegroup(
     name = "platform_layers",
     srcs = [":my_app_layers"],
     target_platform = ":x86_64_linux",
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )
 
 assert_tar_listing(
@@ -54,6 +57,9 @@ oci_image(
     base = "@ubuntu",
     entrypoint = ["/{}/my_app_bin".format(package_name())],
     tars = [":my_app_layers"],
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )
 
 platform_transition_filegroup(
@@ -63,6 +69,9 @@ platform_transition_filegroup(
         "@platforms//cpu:arm64": ":aarch64_linux",
         "@platforms//cpu:x86_64": ":x86_64_linux",
     }),
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )
 
 # To build the image and load it into it into a local runtime:
@@ -78,6 +87,9 @@ platform_transition_filegroup(
     name = "amd64_image",
     srcs = [":image"],
     target_platform = ":x86_64_linux",
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )
 
 container_structure_test(
@@ -85,4 +97,7 @@ container_structure_test(
     configs = ["py_image_test.yaml"],
     image = ":amd64_image",
     platform = "linux/amd64",
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )

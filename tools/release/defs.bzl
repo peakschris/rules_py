@@ -4,7 +4,7 @@ load("@aspect_bazel_lib//lib:copy_file.bzl", "copy_file")
 load("@aspect_bazel_lib//tools/release:hashes.bzl", "hashes")
 load("@rules_rust//rust:defs.bzl", _rust_binary = "rust_binary")
 
-DEFAULT_OS = ["linux", "macos"]
+DEFAULT_OS = ["linux", "macos", "windows"]
 DEFAULT_ARCHS = ["aarch64", "x86_64"]
 
 def _map_os_to_triple(os):
@@ -12,6 +12,8 @@ def _map_os_to_triple(os):
         return "unknown-linux-musl"
     if os == "macos":
         return "apple-darwin"
+    if os == "windows":
+        return "pc-windows-msvc"
     fail("Unrecognized os", os)
 
 # buildozer: disable=function-docstring
@@ -24,6 +26,8 @@ def rust_binary(name, visibility = [], **kwargs):
         target_compatible_with = ["@platforms//os:{}".format(os)]
 
         for arch in DEFAULT_ARCHS:
+            if os == "windows" and arch != "x86_64":
+                continue  # Windows currently only supports x86_64
             arch_target_suffix = "{}_{}".format(target_suffix, arch)
             binary_name = "{}_build".format(arch_target_suffix)
             platform = "//tools/platforms:{}_{}".format(os, arch)

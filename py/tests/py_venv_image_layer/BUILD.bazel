@@ -68,6 +68,9 @@ oci_image(
     base = "@ubuntu",
     entrypoint = ["/{}/my_app_bin".format(package_name())],
     tars = [":my_app_layers"],
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )
 
 platform_transition_filegroup(
@@ -77,6 +80,9 @@ platform_transition_filegroup(
         "@platforms//cpu:arm64": ":arm64_linux",
         "@platforms//cpu:x86_64": ":amd64_linux",
     }),
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )
 
 # To build the image and load it into it into a local runtime:
@@ -86,12 +92,18 @@ oci_load(
     name = "image_load",
     image = ":platform_image",
     repo_tags = ["gcr.io/oci_python_venv_hello_world:latest"],
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )
 
 platform_transition_filegroup(
     name = "amd64_image",
     srcs = [":image"],
     target_platform = ":amd64_linux",
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )
 
 container_structure_test(
@@ -99,6 +111,9 @@ container_structure_test(
     configs = ["py_amd64_image_content_test.yaml"],
     image = ":amd64_image",
     platform = "linux/amd64",
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )
 
 container_structure_test(
@@ -108,6 +123,7 @@ container_structure_test(
     platform = "linux/amd64",
     target_compatible_with = [
         "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
     ],
 )
 
@@ -115,6 +131,9 @@ platform_transition_filegroup(
     name = "arm64_image",
     srcs = [":image"],
     target_platform = ":arm64_linux",
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )
 
 container_structure_test(
@@ -122,6 +141,9 @@ container_structure_test(
     configs = ["py_arm64_image_content_test.yaml"],
     image = ":arm64_image",
     platform = "linux/aarch64",
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
 )
 
 container_structure_test(
